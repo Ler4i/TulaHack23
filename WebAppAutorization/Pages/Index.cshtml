@@ -1,0 +1,930 @@
+﻿@page
+@using Microsoft.AspNetCore.Identity
+@using WebAppAutorization.Data.Identity;
+@inject SignInManager<ApplicationIdentityUser> SignInManager
+@model IndexModel
+@{
+    ViewData["Title"] = "Home page";
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Главная страница</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image" href="./assets/иконка.png" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="header" id="header-main">
+            <div class="logo">
+                <img src="https://cdn.discordapp.com/attachments/1024392041024733277/1165550369816969236/66f3bcc9c9325c1e.png?ex=6547425f&is=6534cd5f&hm=cd09c2fc416c81477ab9f892b5b97d1ef50dc15921cb0e33b3d7e8108d98ec92&" alt="" height="37px" width="40px">
+            </div>
+            <a href="./index.html" class="name">Увлеченные люди</a>
+            <div class="main-logos-a">
+                <a href="#" class="search" id="ab-us"><img src="./assets/search.png" alt="" width="38px"></a>
+                <!-- <a href="#" class="add" id="ab-us"><img src="./assets/add.png" alt="" width="38px"></a i class="fa-solid fa-plus"> -->
+                <button class="post-add" type="button" id="main-but-add"><i class="fa-solid fa-plus"></i></button>
+                <a href="./index.html" class="logout" id="ab-us"><img src="./assets/logout.png" alt="" width="38px"></a>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-body-scr">
+        <div class="links-a">
+            <a href="#" id="all-sub-1" class="ab-us-main-a-1">Все</a>
+            <a href="#" id="all-sub-2" class="ab-us-main-a-2">Подписки</a>
+        </div>
+    </div>
+
+    <div class="left-fall">
+        <div class="user-round">
+            <img src="https://cdn.discordapp.com/attachments/1024392041024733277/1165549280078073906/icon__profile_circle.png?ex=6547415b&is=6534cc5b&hm=34f5c45e8f1dd543cc942d00ee6413f9a7cea4c479508ee3478119be95d0869e&" alt="" width="38px" id="user-groups-chat-icon">
+            <a href="./user.html" id="user-groups-chat">Профиль</a>
+        </div>
+
+        <div class="user-round">
+            <img src="https://cdn.discordapp.com/attachments/1024392041024733277/1165549281227329557/group.png?ex=6547415b&is=6534cc5b&hm=498c431c7c2a75f04762e45eca2a9b9c22d002c6268a02ea323ca0705cda71a2&" alt="" width="38px" id="user-groups-chat-icon">
+            <a href="#" id="user-groups-chat">Сообщества</a>
+        </div>
+
+        <div class="user-round">
+            <img src="https://cdn.discordapp.com/attachments/1024392041024733277/1165549280577212436/messages.png?ex=6547415b&is=6534cc5b&hm=77b1c8a068e1f784ae0154b726e473f8a22feaf89849ed2ed90b39a8423731ff&" alt="" width="38px" id="user-groups-chat-icon">
+            <a href="#" id="user-groups-chat">Чат</a>
+            <a class="nav-link text-dark" asp-area="" asp-page="/chat">Чат</a>
+        </div>
+    </div>
+
+    <div class="posts">
+
+        <script>
+            // const menuBody = document.querySelector('#menu')
+            // document.addEventListener("click", menu)
+            // function menu(event){
+            //     if (event.target.closest('.menu_button')){
+            //         menuBody.classList.toggle('_active')
+            //     }
+            //     if (!event.target.closest('.menu_button')){
+            //         menuBody.classList.remove('_active')
+            //     }
+            // }
+
+
+            // ВАЛИДАЦИЯ (ТЕЛЕФОН)
+
+            // function ValidPhone() {
+            //     var re = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+            //     var myPhone = document.getElementsByClassName('phone').value;
+            //     var valid = re.test(myPhone);
+            //     if (valid) output = router.replace("./index.html");
+            //     else output = null;
+            //     return valid;
+            // }
+
+            // function phonenumber(inputtxt)
+            // {
+            //   var phoneno = /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im;
+            //   if((inputtxt.value.match(phoneno))
+            //         {
+            //       return true;
+            //         }
+            //       else
+            //         {
+            //         alert("message");
+            //         return false;
+            //         }
+            // }
+
+
+            // СОЗДАНИЕ ПОСТОВ
+            {/* <input name="myFile" type="file" class="post-pic"> */ }
+            // <button class="like"><i class="fa-solid fa-heart" style="color: #ed1a3d;"></i></button>
+
+            const postsEl = document.querySelector('.posts');
+            const addBtn = document.querySelector('.post-add');
+
+            function createpost(title, text) {
+                const postEl = document.createElement('div');
+                postEl.classList.add('post')
+                postEl.innerHTML = `
+                <div class="post-header">
+                            <p id="post-title">${title}</p>
+                            <textarea id="post-title-input" class="hidden">${title}</textarea>
+                            <div>
+                                <button class="post-edit" id="post-btns"><i class="fa-solid fa-pen-to-square"></i></button>
+                                <button class="post-delete" "post-btns"><i class="fa-solid fa-trash"></i></button>
+                            </div>
+                        </div>
+                        <p id="post-text">${text}</p>
+                        <textarea id="post-text-input" class="hidden" rows="16" cols="27" minlength="10" maxlength="270">${text}</textarea>
+                      `
+                const editBtn = postEl.querySelector('.post-edit')
+                const deleteBtn = postEl.querySelector('.post-delete')
+                const titleEl = postEl.querySelector('#post-title')
+                const textEl = postEl.querySelector('#post-text')
+                const titleInputEl = postEl.querySelector('#post-title-input')
+                const textInputEl = postEl.querySelector('#post-text-input')
+
+
+                editBtn.addEventListener('click', (e) => {
+                    titleEl.classList.toggle('hidden')
+                    textEl.classList.toggle('hidden')
+
+                    titleInputEl.classList.toggle('hidden')
+                    textInputEl.classList.toggle('hidden')
+
+                })
+                deleteBtn.addEventListener('click', (e) => {
+                    postEl.remove()
+                })
+
+                titleInputEl.addEventListener('input', (e) => {
+                    titleEl.innerText = e.target.value
+                })
+
+                textInputEl.addEventListener('input', (e) => {
+                    textEl.innerText = e.target.value
+                })
+
+                return postEl
+            }
+            addBtn.addEventListener('click', (e) => {
+                const el = createpost('#Заголовок', 'Текст')
+                postsEl.appendChild(el)
+            })
+
+
+            // let upH = document.querySelector('.post-add').clientHeight
+            // let up = document.querySelector('.post-add')
+            // console.log(upH)
+
+            // window.onscroll = function showUp(){
+            //     if(window.pageYOffset > upH){
+            //         up.classList.add('fix')
+            //     }
+            //     else{
+            //         up.classList.remove('fix')
+            //     }
+            // }
+        </script>
+        <style>*{
+    margin: 0;
+    padding: 0;
+    border: 0;
+
+}
+
+/* МЕЙН МЕНЮ */
+
+!font-face {
+	font-family: 'Raleway'; 
+	src: local('Raleway'), url(./Raleway/Raleway.ttf); 
+    font-style: normal;
+	font-weight: bold;
+}
+
+/* .login, .reg, .post-add, .btn-reg, .btn-log */
+#btn-all{
+    width: 225px;
+    height: 56px;
+    border-radius: 21px;
+    background-color: #ED1A3D;
+    font-weight: 700;
+    font-size: 16px;
+    align-items: center;
+    transition: all 0.2s linear 0s;
+    color: white;
+}
+#btn-all:hover{
+    background-color: white;
+    box-shadow: inset 0 0 0 3px #ED1A3D;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+    color: #ED1A3D;
+}
+.reg{
+    margin-left: 10px;
+    color: white;
+}
+.reg:hover{
+    color: #ED1A3D;
+}
+
+.login{
+    color: white;
+    margin-right: 30px;
+}
+.login:hover{
+    color: #ED1A3D;
+}
+
+a{
+    text-decoration: none;
+}
+.name{
+    font-size: 32px;
+    font-weight: 700;
+    color: white;
+}
+
+
+html,
+body{
+    width: 100%;
+    height: 100%;
+}
+body{
+    background-color: #14173A;
+    /* font-family: 'Architects Daughter', cursive;
+    font-family: 'Bad Script', cursive; */
+    font-family: 'Raleway', sans-serif;
+}
+.img-main{
+    margin-left: 50px;
+}
+.btns {
+    display: flex;
+    margin-top: 100px;
+}
+.text{
+    color: white;
+    font-weight: 700;
+    font-size: 40px;
+    align-items: center;
+    margin-top: 40px;
+    padding: 0px 0px 20px 0px;
+}
+
+header{
+    width: 100%;
+    height: 100px;
+    /* width: 100 wv;
+    height: 100 hv; */
+    display: flex;
+    align-items: center;
+    /* margin-bottom: 70px; */
+}
+.header{
+    /* width: 100%;
+    height: 500px; */
+    padding: 5px 0px 0px 40px;
+    display: flex;
+    background: transparent;
+    align-items: center;
+}
+.ab-us-a{
+    align-items: center; 
+    display: inline;
+    margin-left: 50px;
+}
+.ab-us-main-a{
+    margin-left: 820px;
+    border: 1px solid #ED1A3D;
+    border-radius: 21px;
+    padding: 9px 30px 9px 30px;
+}
+#ab-us{
+    color: white;
+    font-weight: 600;
+    font-size: 16px;
+}
+
+.main-body{
+    display: flexbox;
+    flex-direction: column;
+    padding: 0px 0px 0px 50px;
+}
+.body{
+    display: flex;
+    margin-top: 110px;
+    margin-left: 73px;
+}
+
+.name{
+    margin-left: 30px;
+}
+
+
+/* ТОЛЬКО ДЛЯ РЕГИСТРАЦИИ И ВХОДА*/
+
+.main-reg{
+    margin-top: 50px;
+    width: 559px;
+    height: 500px;
+    align-items: center;
+    display: flex;
+    background-color: white;
+    margin-left: 490px;
+    border-radius: 55px;
+    color: #ED1A3D;
+    flex-direction: column;
+}
+
+.span-reg{
+    margin-top: 45px;
+    font-weight: 700;
+    font-size:36px;
+    align-items: center;
+    /* margin-bottom: 470px; */
+    /* margin-left: 120px; */
+}
+/* .chkboxes{
+    margin-top: 450px;
+    display: inline;
+    flex-direction: row-reverse;
+} */
+
+#input{
+    background-color: transparent;
+    /* border: none; */
+    outline: none;
+    border-bottom: 2px solid #ED1A3D;
+    /* tap-highlight-color: transparent; */
+    padding: 10px 15px;
+    margin-bottom: 10px;
+
+    display: block;
+    font-weight: 600;
+    font-size:24px;
+    align-items: center;
+
+}
+::placeholder{
+    color: #ED1A3D;
+}
+
+.btn-reg{
+    width: 298px;
+    height: 56px;
+
+    margin-top: 30px;
+
+    font-weight: 600;
+    font-size:24px;
+    align-items: center;
+    color: white;
+}
+
+.rmbr{
+    font-weight: 600;
+    font-size:16px;
+    align-items: center;
+    color: #ED1A3D;
+}
+
+.btn-log{
+    width: 298px;
+    height: 56px;
+
+    margin-top: 90px;
+
+    font-weight: 600;
+    font-size:24px;
+    align-items: center;
+    color: white;
+}
+
+
+/* ГЛАВНАЯ СТРАНИЦА */
+
+#header-main{
+    background-color: #5F53E3;
+    border-radius: 0px 0px 25px  25px;
+    width: 100%;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    padding: 5px 0px 0px 40px;
+}
+
+.search, .add, .logout{
+    margin-left: 70px;
+}
+
+.main-logos-a{
+    margin-left: 690px;
+}
+
+.main-body-scr{
+    flex-direction: row;
+    align-items: center;
+    margin-top: 40px;
+}
+
+#all-sub-1{
+    margin-right: 40px;
+}
+
+
+.ab-us-main-a-1{
+    margin-left: 647px;
+    border: 1px solid #ED1A3D;
+    border-radius: 21px;
+    padding: 9px 30px 9px 30px;
+    color: white;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 24px;
+}
+.ab-us-main-a-1:hover{
+    border: none;
+    background-color: white;
+    color: #ED1A3D;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+}
+
+.ab-us-main-a-2{
+    border: 1px solid #ED1A3D;
+    border-radius: 21px;
+    padding: 9px 30px 9px 30px;
+    color: white;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 24px;
+}
+.ab-us-main-a-2:hover{
+    border: none;
+    background-color: white;
+    color: #ED1A3D;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+}
+
+.left-fall{
+    float: left;
+    flex-direction: column;
+    margin-left: 40px;
+    font-weight: 600;
+    font-size: 24px;
+    color: white;
+}
+#user-groups-chat{
+    color: white;
+}
+#user-groups-chat-icon{
+    margin-top: 23px;
+    padding: 0px 10px 0px 0px;
+}
+
+/* ПОСТЫ */
+
+.post{
+    font-weight: 600;
+    font-size: 24px;
+    color: white;
+    width: 250px;
+    height: 300px;
+    background-color: #ED1A3D;
+    border-radius: 15px;
+    padding: 15px;
+    margin: 8px;
+
+}
+
+.post-header{
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+}
+
+.posts{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 70px;
+    margin-left: 380px;
+}
+
+.hidden{
+    display: none;
+}
+
+.post-add{
+    height: 40px;
+    width: 40px;
+    margin-left: 70px;
+    border-radius: 21px;
+    background-color: #ED1A3D;
+    font-weight: 700;
+    font-size: 16px;
+    align-items: center;
+    transition: all 0.2s linear 0s;
+    color: white;
+}
+
+.post-add:hover{
+    background-color: white;
+    box-shadow: inset 0 0 0 3px #ED1A3D;
+    transition: all 0.2s linear 0s;
+    position: relative;
+    cursor: pointer;
+    color: #ED1A3D;
+}
+
+#post-text{
+    font-weight: 600;
+    font-size: 16px;
+}
+
+/* .like{
+    height: 20px;
+    width: 20px;
+    border-radius: 20;
+    background-color: white;
+} */
+
+
+ /* СТРАНИЦА О НАС */
+
+.about-page-wrapper {
+    font-weight: 600;
+    font-size: 36px;
+    color: white;
+}
+.ab-us-pic {
+    margin-top: 95px;
+    margin-left: 120px;
+    max-width: 100%;
+    max-height: 100%;
+    transform: translateY(-25%);
+}
+.span{
+    text-align: justify;
+    display: block;
+    margin-bottom: 100px;
+}
+.ab-us-page-body{
+    margin-left: 120px;
+    flex-direction: row;
+    display: flex;
+    height: 100%;
+    align-items: center;
+
+}
+#span1-ab-us{
+    display: block;
+    margin-bottom: 7.5rem;
+    font-size: 2.75rem;
+}
+
+
+/* ПОЛЬЗОВАТЕЛЬ */
+#header-user{
+    background-color: #5F53E3;
+    border-radius: 0px 0px 25px  25px;
+    width: 100%;
+    height: 323px;
+    display: flex;
+    align-items: center;
+    padding: 5px 0px 0px 40px;
+}
+
+.red-circle{
+    height: 180px;
+    width: 180px;
+    border-radius: 180px;
+    background-color: #ED1A3D;
+    align-items: center;
+}
+
+/* НЕ ИСПОЛЬЗУЕТСЯ */
+
+
+/* .inputs{
+    width: 400px;
+} */
+/* .chkboxes{
+    margin-right: 300px;
+    margin-top: 50px;
+} */
+/* .remember-me{
+    margin-right: 300px;
+    margin-top: 50px;
+} */
+
+/* .rmbr{
+    margin-right: 500px;
+} */
+
+/* .fixed{
+    position: fixed;
+    top: 0;
+    left: 0;
+    background-color: #000;
+} */
+
+
+/* .logo{
+    color: white;
+    cursor: pointer;
+    font-family: 'Piazzolla', sans-serif;
+    font-size: 3em;
+    display: flex;
+} */
+
+/* #about{
+    margin-left: 600px;
+    font-size: 1.3em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#about > a:not(:last-child) {
+    margin-right: 50px;
+} */
+
+
+/* .menu_button{
+    margin-left: 100px;
+    font-size: 1.5em;
+    border-radius: 10px;
+    background: transparent;
+    color: white;
+    border: 2px solid white;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.list{
+    position: absolute;
+    margin-top: 8px;
+    margin-left: 95px;
+    color: white;
+    font-size: 1.5em;
+    border: 2px white solid;
+    border-radius: 20px;
+    width: 200px;
+    list-style: none;
+}
+
+li{
+    margin-left: 10px;
+    margin-top: 8px;
+    margin-right: 15px;
+}
+
+#menu{
+    display: inline-block;
+    font-family: 'Piazzolla', sans-serif;
+    margin-top: 10px;
+    position: relative;
+}
+
+#menu._active .list{
+    display: block;
+}
+
+#menu._active .menu_button span:first-child{
+    display: none;
+}
+
+#menu._active .menu_button span:last-child{
+    display: block;
+}
+
+.menu_button span:first-child{
+    display: block;
+}
+
+.menu_button span:last-child{
+    display: none;
+} */
+
+/* #top{
+    width: 100%;
+    height: 1000px;
+    background-image: url(https://avatars.mds.yandex.net/i?id=7745bdfd6cafba46720f0751bda80aaa-5235511-images-thumbs&n=13);
+    background-size: cover;
+    color: white;
+    font-size: 2em;
+    text-align: center;
+}
+
+#top span {
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#top h1 {
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#top h3 {
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#main{
+    background-color: rgb(139, 126, 111);
+    color: rgb(61, 48, 37);
+    border-top: 5px solid rgb(105, 71, 43);
+    font-size: 1.3em;
+    float: left;
+}
+
+#main div{
+    float: left;
+    width: 48%;
+    margin-right: 2%;
+}
+
+span{
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#main h2{
+    font-size: 2em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#parallax{
+    background-size: cover;
+    float: left;
+    padding: 100px 0px;
+    width: 100%;
+    text-align: center;
+    color: white;
+    background-color: rgba(0, 0, 0, 0.452);
+    background-attachment: fixed;
+    background-blend-mode: multiply;
+    background-image: url(https://krasivosti.pro/uploads/posts/2021-04/1617789941_36-p-koshka-oboi-mnogo-kotov-45.jpg);
+}
+
+#parallax h2{
+    font-size: 4em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#parallax h4{
+    font-size: 2em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+p {
+    font-family: 'Piazzolla', sans-serif;
+}
+
+.img{
+    font-size: 2em;
+}
+
+#parallax .img{
+    float: left;
+    width: 30%;
+    margin-right: 5%;
+    margin-top: 50px;
+}
+
+#parallax .img:nth-child(odd){
+    margin-left: 18%;
+}
+
+#contacts h5{
+    font-size: 3em;
+    color: rgb(61, 48, 37);
+}
+
+#contacts{
+    width: 100%;
+    float: left;
+    padding-bottom: 40px;
+    padding-top: 70px;
+    border-top: 5px solid rgb(105, 71, 43);
+    background-color: rgb(139, 126, 111);
+}
+
+#form_inp{
+    margin-top: 15px;
+    width: 35%;
+    margin-left: 38%;
+    font-size: 1.1em;
+}
+
+#form_inp label {
+    color: rgb(61, 48, 37);
+    cursor: pointer;
+    font-size: 1.4em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#form_inp label > span{
+    color: rgb(255, 0, 0);
+}
+
+#form_inp input,
+#form_inp textarea{
+    margin-bottom: 10px;
+    width: 70%;
+    padding: 10px 2%;
+    border: 3px solid rgb(95, 74, 56);
+    border-radius: 7px;
+    font-size: 1em;
+}
+
+#form_inp input:hover,
+#form_inp textarea:hover{
+    border-color: rgb(165, 116, 74);
+}
+
+.btn{
+    background-color: rgb(124, 101, 81);
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.5em;
+    padding: 5px 9px;
+    color: rgb(173, 154, 136);
+    text-shadow: 0 0 3px rgb(56, 40, 30);
+    float: left;
+}
+
+.btn:hover{
+    background-color: rgb(173, 154, 136);
+    color: rgb(93, 74, 57);
+}
+
+#faq{
+    background-color: rgb(139, 126, 111);
+    border-top: 5px solid rgb(105, 71, 43);
+    width: 100%;
+    float: left;
+    padding: 30px 0px;
+}
+
+#faq span{
+    color: rgb(61, 48, 37);
+    cursor: pointer;
+    font-size: 1.4em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#faq p{
+    color: rgb(61, 48, 37);
+    cursor: pointer;
+    font-size: 1.2em;
+    font-family: 'Piazzolla', sans-serif;
+}
+
+#faq span,
+#faq p{
+    margin-left: 40px;
+}
+
+#faq .title{
+    font-size: 2.4em;
+}
+
+#faq .heading{
+    font-size: 1.5em;
+}
+
+.textarea_counter{
+    margin-bottom: 10px;
+    font-family: 'Piazzolla', sans-serif;
+    color: rgb(61, 48, 37);
+    font-size: 1.3em;
+}
+
+.fixed{
+    background-color: rgb(51, 38, 33);
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+.bb_up{
+    text-decoration: none;
+    color: rgb(51, 38, 33);
+    margin-left: 100px;
+    display: inline-block;
+    font-size: 40px;
+    padding: 20px;
+    margin-right: 50px;
+    border-radius: 50%;
+    background-color: rgb(139, 126, 111);
+    transition: 0.5s;
+    position: absolute;
+    left: 1700px;
+    top: 850px;
+}
+
+.bb_up:hover{
+    
+}
+
+.fix{
+    left: 1700px;
+    top: 850px;
+    position: fixed;
+} */
+</style>
+</body>
+</html>
